@@ -4,23 +4,27 @@ namespace CraftingInterpreters;
 
 public class Scanner(string source)
 {
-    private int start = 0;
-    private int current = 0;
-    private int line = 1;
+    private int _start = 0;
+    private int _current = 0;
+    private int _line = 1;
 
-    private List<Token> tokens = [];
+    private List<Token> _tokens = [];
 
     public List<Token> ScanTokens()
     {
-        tokens = [];
+        _start = 0;
+        _current = 0;
+        _line = 1;
+        _tokens = [];
+
         while (!IsAtEnd)
         {
-            start = current;
+            _start = _current;
             ScanToken();
         }
 
-        tokens.Add(new Token(EOF, "", null, line));
-        return tokens;
+        _tokens.Add(new Token(EOF, "", null, _line));
+        return _tokens;
     }
 
     private void ScanToken()
@@ -90,7 +94,7 @@ public class Scanner(string source)
             case '\t':
                 break;
             case '\n':
-                line++;
+                _line++;
                 break;
             // String literals
             case '"':
@@ -105,33 +109,33 @@ public class Scanner(string source)
                 @Identifier();
                 break;
             default:
-                Lox.Error(line, "Unexpected character.");
+                Lox.Error(_line, "Unexpected character.");
                 break;
         }
     }
 
     private void AddToken(TokenType type, object? literal = null) =>
-        tokens.Add(new Token(type, source.Substring(start, current - start), literal, line));
+        _tokens.Add(new Token(type, source.Substring(_start, _current - _start), literal, _line));
 
     private bool Match(char expected)
     {
         if (IsAtEnd) return false;
-        if (source[current] != expected) return false;
-        current++;
+        if (source[_current] != expected) return false;
+        _current++;
         return true;
     }
 
     private char Peek() =>
-        IsAtEnd ? '\0' : source[current];
+        IsAtEnd ? '\0' : source[_current];
 
     private char PeekNext() =>
-        current + 1 >= source.Length ? '\0' : source[current + 1];
+        _current + 1 >= source.Length ? '\0' : source[_current + 1];
 
     private char Advance() =>
-        source[current++];
+        source[_current++];
 
     private bool IsAtEnd =>
-        current >= source.Length;
+        _current >= source.Length;
 
     private bool IsDigit(char c) =>
         c is >= '0' and <= '9';
@@ -148,20 +152,20 @@ public class Scanner(string source)
     {
         while (Peek() != '"' && !IsAtEnd)
         {
-            if (Peek() == '\n') line++;
+            if (Peek() == '\n') _line++;
             Advance();
         }
 
         if (IsAtEnd)
         {
-            Lox.Error(line, "Unterminated string.");
+            Lox.Error(_line, "Unterminated string.");
             return;
         }
 
         // The closing "
         Advance();
 
-        AddToken(STRING, source.Substring(start + 1, current - start - 1));
+        AddToken(STRING, source.Substring(_start + 1, _current - _start - 1));
     }
 
     private void Number()
@@ -177,13 +181,13 @@ public class Scanner(string source)
             while (IsDigit(Peek())) Advance();
         }
 
-        AddToken(NUMBER, Double.Parse(source.Substring(start, current - start)));
+        AddToken(NUMBER, double.Parse(source.Substring(_start, _current - _start)));
     }
 
     private void Identifier()
     {
         while (IsAlphaNumeric(Peek())) Advance();
-        var text = source.Substring(start, current - start);
+        var text = source.Substring(_start, _current - _start);
         AddToken(IdentifiersHelper.Get(text) ?? IDENTIFIER);
     }
 }
