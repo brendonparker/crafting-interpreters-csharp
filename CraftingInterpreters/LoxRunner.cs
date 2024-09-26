@@ -33,14 +33,35 @@ public static class LoxRunner
     {
         var scanner = new Scanner(source);
         var tokens = scanner.ScanTokens();
-        foreach (var token in tokens)
-        {
-            Console.WriteLine(token);
-        }
+        Parser parser = new(tokens);
+        
+        var expression = parser.Parse();
+
+        // Stop if there was a syntax error.
+        if (HadError) return;
+
+        Console.WriteLine(new AstPrinter().Print(expression!));
+        
+        // foreach (var token in tokens)
+        // {
+        //     Console.WriteLine(token);
+        // }
     }
 
     public static void Error(int line, string message) =>
         Report(line, "", message);
+
+    public static void Error(Token token, string message)
+    {
+        if (token.Type == TokenType.EOF)
+        {
+            Report(token.Line, " at end", message);
+        }
+        else
+        {
+            Report(token.Line, " at '" + token.Lexeme + "'", message);
+        }
+    }
 
     public static void Report(int line, string where, string message)
     {
