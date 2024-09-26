@@ -7,6 +7,12 @@ public abstract record Stmt
     public abstract T Accept<T>(IVisitor<T> visitor);
 }
 
+public record Block(List<Stmt> Statements) : Stmt
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitBlockStmt(this);
+}
+
 public record Expression(Expr.Expr InnerExpression) : Stmt
 {
     public override T Accept<T>(IVisitor<T> visitor) =>

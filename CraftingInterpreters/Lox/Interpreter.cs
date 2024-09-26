@@ -9,7 +9,7 @@ public class Void;
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 {
     private static readonly Void Void = new();
-    private readonly LoxEnvironment _env = new();
+    private LoxEnvironment _env = new();
 
     public object VisitAssignExpr(Expr.Assign expr) =>
         _env.Assign(expr.Name, Evaluate(expr.Value))!;
@@ -83,23 +83,29 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     public object VisitVariableExpr(Expr.Variable expr) =>
         _env.Get(expr.Name)!;
 
-    public Void VisitExpressionStmt(Stmt.Expression expr)
+    public Void VisitBlockStmt(Stmt.Block stmt)
     {
-        Evaluate(expr.InnerExpression);
+        ExecuteBlock(stmt.Statements, new LoxEnvironment(_env));
         return Void;
     }
 
-    public Void VisitPrintStmt(Stmt.Print expr)
+    public Void VisitExpressionStmt(Stmt.Expression stmt)
     {
-        var result = Evaluate(expr.Expression);
+        Evaluate(stmt.InnerExpression);
+        return Void;
+    }
+
+    public Void VisitPrintStmt(Stmt.Print stmt)
+    {
+        var result = Evaluate(stmt.Expression);
         Print(result);
         return Void;
     }
 
-    public Void VisitVarStmt(Stmt.Var expr)
+    public Void VisitVarStmt(Stmt.Var stmt)
     {
-        var value = expr.Initializer == null ? null : Evaluate(expr.Initializer);
-        _env.Define(expr.Name.Lexeme, value);
+        var value = stmt.Initializer == null ? null : Evaluate(stmt.Initializer);
+        _env.Define(stmt.Name.Lexeme, value);
         return Void;
     }
 
@@ -118,6 +124,23 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     private void Execute(Stmt.Stmt statement) =>
         statement.Accept(this);
 
+    private void ExecuteBlock(List<Stmt.Stmt> statements, LoxEnvironment environment)
+    {
+        var prev = _env;
+        try
+        {
+            _env = environment;
+            foreach (var statement in statements)
+            {
+                Execute(statement);
+            }
+        }
+        finally
+        {
+            _env = prev;    
+        }
+    }
+    
     private void Print(object value) =>
         Console.WriteLine(Stringify(value));
 

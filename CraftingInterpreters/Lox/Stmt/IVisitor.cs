@@ -2,7 +2,8 @@ namespace CraftingInterpreters.Lox.Stmt;
 
 public interface IVisitor<out T>
 {
-    T VisitExpressionStmt(Expression expr);
-    T VisitPrintStmt(Print expr);
-    T VisitVarStmt(Var expr);
+    T VisitBlockStmt(Block stmt);
+    T VisitExpressionStmt(Expression stmt);
+    T VisitPrintStmt(Print stmt);
+    T VisitVarStmt(Var stmt);
 }
