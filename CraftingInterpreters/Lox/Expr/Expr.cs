@@ -7,6 +7,12 @@ public abstract record Expr
     public abstract T Accept<T>(IVisitor<T> visitor);
 }
 
+public record Assign(Token Name, Expr Value) : Expr
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitAssignExpr(this);
+}
+
 public record Binary(Expr Left, Token Op, Expr Right) : Expr
 {
     public override T Accept<T>(IVisitor<T> visitor) =>

@@ -5,6 +5,9 @@ namespace CraftingInterpreters.Lox;
 
 public class AstPrinter : IVisitor<string>
 {
+    public string VisitAssignExpr(Assign expr) =>
+        throw new NotImplementedException();
+
     public string VisitBinaryExpr(Binary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Left, expr.Right);
 

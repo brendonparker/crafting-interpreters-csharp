@@ -11,6 +11,11 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     private static readonly Void Void = new();
     private readonly LoxEnvironment _env = new();
 
+    public object VisitAssignExpr(Expr.Assign expr)
+    {
+        throw new NotImplementedException();
+    }
+
     public object VisitBinaryExpr(Expr.Binary expr)
     {
         var (left, right) = (Evaluate(expr.Left), Evaluate(expr.Right));
@@ -95,7 +100,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 
     public Void VisitVarStmt(Stmt.Var expr)
     {
-        object? value = expr.Initializer == null ? null : Evaluate(expr.Initializer);
+        var value = expr.Initializer == null ? null : Evaluate(expr.Initializer);
         _env.Define(expr.Name.Lexeme, value);
         return Void;
     }

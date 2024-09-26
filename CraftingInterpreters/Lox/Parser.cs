@@ -63,7 +63,26 @@ public class Parser(List<Token> tokens)
     }
 
     private Expr.Expr Expression() =>
-        Equality();
+        Assignment();
+
+    private Expr.Expr Assignment()
+    {
+        var expr = Equality();
+        if (Match(EQUAL))
+        {
+            var equals = Previous();
+            var value = Assignment();
+            if (expr is Expr.Variable exprAsVariable)
+            {
+                return new Expr.Assign(exprAsVariable.Name, value);
+            }
+
+            Error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
 
     private Expr.Expr Equality()
     {
