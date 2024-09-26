@@ -121,7 +121,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 
     public Void VisitPrintStmt(Stmt.Print stmt)
     {
-        var result = Evaluate(stmt.Expression);
+        var result = Evaluate(stmt.ExpressionToPrint);
         Print(result);
         return Void;
     }
@@ -133,7 +133,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         return Void;
     }
 
-    public void Interpret(List<Stmt.Stmt> statements)
+    public void Interpret(List<Stmt> statements)
     {
         try
         {
@@ -145,10 +145,10 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         }
     }
 
-    private Void Execute(Stmt.Stmt statement) =>
+    private Void Execute(Stmt statement) =>
         statement.Accept(this);
 
-    private void ExecuteBlock(List<Stmt.Stmt> statements, LoxEnvironment environment)
+    private void ExecuteBlock(List<Stmt> statements, LoxEnvironment environment)
     {
         var prev = _env;
         try
@@ -186,7 +186,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
             _ => true
         };
 
-    private object Evaluate(Expr.Expr expr) =>
+    private object Evaluate(Expr expr) =>
         expr.Accept(this);
 
     private bool AreEqual(object? a, object? b) =>

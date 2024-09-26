@@ -26,25 +26,24 @@ namespace CraftingInterpreters.Generators
                 {
                     var sb = new StringBuilder();
                     sb.AppendLine("#nullable enable");
-                    sb.Append("namespace CraftingInterpreters.Lox.").Append(classDef.Key).AppendLine(";");
+                    sb.AppendLine("namespace CraftingInterpreters.Lox;");
                     sb.AppendLine();
                     sb.Append("public abstract record ").AppendLine(classDef.Key);
                     sb.AppendLine("{");
                     sb.AppendLine("    public abstract T Accept<T>(IVisitor<T> visitor);");
-                    sb.AppendLine("}");
                     sb.AppendLine();
                     foreach (var entry in classDef)
                     {
-                        sb.Append("public record ").Append(entry.ClassName).Append("(").Append(entry.Parameters)
+                        sb.Append("    public record ").Append(entry.ClassName).Append("(").Append(entry.Parameters)
                             .Append(") : ").AppendLine(entry.BaseName);
-                        sb.AppendLine("{");
-                        sb.AppendLine("    public override T Accept<T>(IVisitor<T> visitor) =>");
-                        sb.Append("        visitor.Visit").Append(entry.ClassName).Append(entry.BaseName)
+                        sb.AppendLine("    {");
+                        sb.AppendLine("        public override T Accept<T>(IVisitor<T> visitor) =>");
+                        sb.Append("            visitor.Visit").Append(entry.ClassName).Append(entry.BaseName)
                             .AppendLine("(this);");
                         sb.AppendLine("}");
                         sb.AppendLine();
                     }
-
+                    
                     sb
                         .AppendLine("public interface IVisitor<out T>")
                         .AppendLine("{");
@@ -54,12 +53,16 @@ namespace CraftingInterpreters.Generators
                             .Append(entry.ClassName)
                             .Append(entry.BaseName)
                             .Append("(")
+                            .Append(entry.BaseName)
+                            .Append(".")
                             .Append(entry.ClassName)
                             .Append(" ")
                             .Append(entry.BaseName.ToLower())
                             .AppendLine(");");
                     }
                     sb.AppendLine("}");
+                    sb.AppendLine("}");
+                    sb.AppendLine();
                     sb.AppendLine("#nullable restore");
 
                     var sourceText = SourceText.From(sb.ToString(), Encoding.UTF8);

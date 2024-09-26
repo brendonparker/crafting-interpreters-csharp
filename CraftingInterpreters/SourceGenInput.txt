@@ -8,7 +8,7 @@ Expr
     Variable: Token Name
 Stmt
     Block: List<Stmt> Statements
-    Expression: Expr.Expr InnerExpression
-    If: Expr.Expr Condition, Stmt ThenBranch, Stmt? ElseBranch
-    Print: Expr.Expr Expression
-    Var: Token Name, Expr.Expr? Initializer
+    Expression: Expr InnerExpression
+    If: Expr Condition, Stmt ThenBranch, Stmt? ElseBranch
+    Print: Expr ExpressionToPrint
+    Var: Token Name, Expr? Initializer

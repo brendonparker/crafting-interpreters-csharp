@@ -1,35 +1,34 @@
 using System.Text;
-using CraftingInterpreters.Lox.Expr;
 
 namespace CraftingInterpreters.Lox;
 
-public class AstPrinter : IVisitor<string>
+public class AstPrinter : Expr.IVisitor<string>
 {
-    public string VisitAssignExpr(Assign expr) =>
+    public string VisitAssignExpr(Expr.Assign expr) =>
         throw new NotImplementedException();
 
-    public string VisitBinaryExpr(Binary expr) =>
+    public string VisitBinaryExpr(Expr.Binary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Left, expr.Right);
 
-    public string VisitGroupingExpr(Grouping expr) =>
+    public string VisitGroupingExpr(Expr.Grouping expr) =>
         Parenthesize("group", expr.Expression);
 
-    public string VisitLiteralExpr(Literal expr) =>
+    public string VisitLiteralExpr(Expr.Literal expr) =>
         expr.Value == null ? "nil" : expr.Value!.ToString() ?? "";
 
-    public string VisitLogicalExpr(Logical expr) =>
+    public string VisitLogicalExpr(Expr.Logical expr) =>
         throw new NotImplementedException();
-    
-    public string VisitUnaryExpr(Unary expr) =>
+
+    public string VisitUnaryExpr(Expr.Unary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Right);
 
-    public string VisitVariableExpr(Variable expr) =>
+    public string VisitVariableExpr(Expr.Variable expr) =>
         throw new NotImplementedException();
 
-    public string Print(Expr.Expr expr) =>
+    public string Print(Expr expr) =>
         expr.Accept(this);
 
-    private string Parenthesize(string name, params Expr.Expr[] expressions)
+    private string Parenthesize(string name, params Expr[] expressions)
     {
         StringBuilder builder = new();
 

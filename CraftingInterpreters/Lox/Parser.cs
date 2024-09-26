@@ -6,9 +6,9 @@ public class Parser(List<Token> tokens)
 {
     private int _current;
 
-    public List<Stmt.Stmt> Parse()
+    public List<Stmt> Parse()
     {
-        List<Stmt.Stmt> statements = new();
+        List<Stmt> statements = new();
 
         while (!IsAtEnd())
         {
@@ -18,7 +18,7 @@ public class Parser(List<Token> tokens)
         return statements;
     }
 
-    private Stmt.Stmt Declaration()
+    private Stmt Declaration()
     {
         try
         {
@@ -32,7 +32,7 @@ public class Parser(List<Token> tokens)
         }
     }
 
-    private Stmt.Stmt Statement()
+    private Stmt Statement()
     {
         if (Match(IF)) return IfStatement();
         if (Match(VAR)) return VarStatement();
@@ -54,7 +54,7 @@ public class Parser(List<Token> tokens)
 
     private Stmt.Block BlockStatement()
     {
-        List<Stmt.Stmt> statements = [];
+        List<Stmt> statements = [];
         while (!Check(RIGHT_BRACE) && !IsAtEnd())
         {
             statements.Add(Declaration());
@@ -63,21 +63,21 @@ public class Parser(List<Token> tokens)
         return new Stmt.Block(statements);
     }
 
-    private Stmt.Stmt PrintStatement()
+    private Stmt PrintStatement()
     {
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after value.");
         return new Stmt.Print(expr);
     }
 
-    private Stmt.Stmt ExpressionStatement()
+    private Stmt ExpressionStatement()
     {
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
 
-    private Stmt.Stmt VarStatement()
+    private Stmt VarStatement()
     {
         var name = Consume(IDENTIFIER, "Expect variable name.");
         var initializer = Match(EQUAL) ? Expression() : null;
@@ -85,10 +85,10 @@ public class Parser(List<Token> tokens)
         return new Stmt.Var(name, initializer);
     }
 
-    private Expr.Expr Expression() =>
+    private Expr Expression() =>
         Assignment();
 
-    private Expr.Expr Assignment()
+    private Expr Assignment()
     {
         var expr = Or();
         if (Match(EQUAL))
@@ -106,7 +106,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Or()
+    private Expr Or()
     {
         var expr = And();
 
@@ -120,7 +120,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
     
-    private Expr.Expr And()
+    private Expr And()
     {
         var expr = Equality();
 
@@ -134,7 +134,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Equality()
+    private Expr Equality()
     {
         var expr = Comparison();
 
@@ -148,7 +148,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Comparison()
+    private Expr Comparison()
     {
         var expr = Term();
 
@@ -162,7 +162,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Term()
+    private Expr Term()
     {
         var expr = Factor();
 
@@ -176,7 +176,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Factor()
+    private Expr Factor()
     {
         var expr = Unary();
 
@@ -190,14 +190,14 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    private Expr.Expr Unary()
+    private Expr Unary()
     {
         if (Match(BANG, MINUS))
             return new Expr.Unary(Previous(), Unary());
         return Primary();
     }
 
-    private Expr.Expr Primary()
+    private Expr Primary()
     {
         if (Match(FALSE, TRUE, NIL)) return new Expr.Literal(Previous().Type);
         if (Match(NUMBER, STRING)) return new Expr.Literal(Previous().Literal);
