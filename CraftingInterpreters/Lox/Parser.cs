@@ -34,11 +34,22 @@ public class Parser(List<Token> tokens)
 
     private Stmt.Stmt Statement()
     {
+        if (Match(IF)) return IfStatement();
         if (Match(VAR)) return VarStatement();
         if (Match(PRINT)) return PrintStatement();
         if (Match(LEFT_BRACE)) return BlockStatement();
 
         return ExpressionStatement();
+    }
+
+    private Stmt.If IfStatement()
+    {
+        Consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        var expr = Expression();
+        Consume(RIGHT_PAREN, "Expect ')' after 'if' condition.");
+        var thenBranch = Statement();
+        var elseBranch = Match(ELSE) ? Statement() : null;
+        return new Stmt.If(expr, thenBranch, elseBranch);
     }
 
     private Stmt.Block BlockStatement()

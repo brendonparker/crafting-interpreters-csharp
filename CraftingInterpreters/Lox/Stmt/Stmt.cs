@@ -19,6 +19,12 @@ public record Expression(Expr.Expr InnerExpression) : Stmt
         visitor.VisitExpressionStmt(this);
 }
 
+public record If(Expr.Expr Condition, Stmt ThenBranch, Stmt? ElseBranch) : Stmt
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitIfStmt(this);
+}
+
 public record Print(Expr.Expr Expression) : Stmt
 {
     public override T Accept<T>(IVisitor<T> visitor) =>

@@ -83,6 +83,20 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     public object VisitVariableExpr(Expr.Variable expr) =>
         _env.Get(expr.Name)!;
 
+    public Void VisitIfStmt(Stmt.If stmt)
+    {
+        var result = Evaluate(stmt.Condition);
+        if (IsTruthy(result))
+        {
+            Execute(stmt.ThenBranch);
+        }
+        else if (stmt.ElseBranch != null)
+        {
+            Execute(stmt.ElseBranch);
+        }
+        return Void;
+    }
+
     public Void VisitBlockStmt(Stmt.Block stmt)
     {
         ExecuteBlock(stmt.Statements, new LoxEnvironment(_env));
@@ -121,7 +135,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         }
     }
 
-    private void Execute(Stmt.Stmt statement) =>
+    private Void Execute(Stmt.Stmt statement) =>
         statement.Accept(this);
 
     private void ExecuteBlock(List<Stmt.Stmt> statements, LoxEnvironment environment)
@@ -137,10 +151,10 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         }
         finally
         {
-            _env = prev;    
+            _env = prev;
         }
     }
-    
+
     private void Print(object value) =>
         Console.WriteLine(Stringify(value));
 
@@ -158,6 +172,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         {
             null => false,
             bool boolVal => boolVal,
+            double doubleVal => doubleVal == 0,
             _ => true
         };
 
