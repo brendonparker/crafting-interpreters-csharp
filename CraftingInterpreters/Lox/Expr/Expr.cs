@@ -19,7 +19,7 @@ public record Grouping(Expr Expression) : Expr
         visitor.VisitGroupingExpr(this);
 }
 
-public record Literal(object? Value) : Expr
+public record Literal(object Value) : Expr
 {
     public override T Accept<T>(IVisitor<T> visitor) =>
         visitor.VisitLiteralExpr(this);

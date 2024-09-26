@@ -140,7 +140,7 @@ public class Parser(List<Token> tokens)
         throw Error(Peek(), message);
     }
 
-    private void synchronize()
+    private void Synchronize()
     {
         Advance();
 

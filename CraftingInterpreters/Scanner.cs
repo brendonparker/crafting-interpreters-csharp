@@ -23,7 +23,7 @@ public class Scanner(string source)
             ScanToken();
         }
 
-        _tokens.Add(new Token(EOF, "", null, _line));
+        _tokens.Add(new Token(EOF, "", null!, _line));
         return _tokens;
     }
 
@@ -115,7 +115,7 @@ public class Scanner(string source)
     }
 
     private void AddToken(TokenType type, object? literal = null) =>
-        _tokens.Add(new Token(type, source.Substring(_start, _current - _start), literal, _line));
+        _tokens.Add(new Token(type, source.Substring(_start, _current - _start), literal!, _line));
 
     private bool Match(char expected)
     {
