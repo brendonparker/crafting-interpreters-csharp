@@ -17,13 +17,14 @@ public class AstPrinter : IVisitor<string>
     public string VisitLiteralExpr(Literal expr) =>
         expr.Value == null ? "nil" : expr.Value!.ToString() ?? "";
 
+    public string VisitLogicalExpr(Logical expr) =>
+        throw new NotImplementedException();
+    
     public string VisitUnaryExpr(Unary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Right);
 
-    public string VisitVariableExpr(Variable expr)
-    {
+    public string VisitVariableExpr(Variable expr) =>
         throw new NotImplementedException();
-    }
 
     public string Print(Expr.Expr expr) =>
         expr.Accept(this);

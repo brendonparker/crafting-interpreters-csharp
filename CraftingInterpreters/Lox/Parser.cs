@@ -80,7 +80,7 @@ public class Parser(List<Token> tokens)
     private Stmt.Stmt VarStatement()
     {
         var name = Consume(IDENTIFIER, "Expect variable name.");
-        Expr.Expr? initializer = Match(EQUAL) ? Expression() : null;
+        var initializer = Match(EQUAL) ? Expression() : null;
         Consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Var(name, initializer);
     }
@@ -90,7 +90,7 @@ public class Parser(List<Token> tokens)
 
     private Expr.Expr Assignment()
     {
-        var expr = Equality();
+        var expr = Or();
         if (Match(EQUAL))
         {
             var equals = Previous();
@@ -106,6 +106,33 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
+    private Expr.Expr Or()
+    {
+        var expr = And();
+
+        while (Match(OR))
+        {
+            var op = Previous();
+            var right = Equality();
+            expr = new Expr.Logical(expr, op, right);
+        }
+        
+        return expr;
+    }
+    
+    private Expr.Expr And()
+    {
+        var expr = Equality();
+
+        while (Match(AND))
+        {
+            var op = Previous();
+            var right = Equality();
+            expr = new Expr.Logical(expr, op, right);
+        }
+        
+        return expr;
+    }
 
     private Expr.Expr Equality()
     {

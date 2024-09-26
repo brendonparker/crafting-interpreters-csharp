@@ -31,6 +31,12 @@ public record Literal(object Value) : Expr
         visitor.VisitLiteralExpr(this);
 }
 
+public record Logical(Expr Left, Token Op, Expr Right) : Expr
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitLogicalExpr(this);
+}
+
 public record Unary(Token Op, Expr Right) : Expr
 {
     public override T Accept<T>(IVisitor<T> visitor) =>
