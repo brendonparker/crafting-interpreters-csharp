@@ -17,6 +17,11 @@ public class AstPrinter : IVisitor<string>
     public string VisitUnaryExpr(Unary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Right);
 
+    public string VisitVariableExpr(Variable expr)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Print(Expr.Expr expr) =>
         expr.Accept(this);
 

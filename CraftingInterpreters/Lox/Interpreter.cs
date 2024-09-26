@@ -1,3 +1,4 @@
+using CraftingInterpreters.Lox.Stmt;
 using static CraftingInterpreters.Lox.TokenType;
 
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
@@ -75,6 +76,11 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
             _ => null!
         };
     }
+    
+    public object VisitVariableExpr(Expr.Variable expr)
+    {
+        throw new NotImplementedException();
+    }
 
     public Void VisitExpressionStmt(Stmt.Expression expr)
     {
@@ -87,6 +93,11 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         var result = Evaluate(expr.Expression);
         Print(result);
         return Void;
+    }
+
+    public Void VisitVarStmt(Var expr)
+    {
+        throw new NotImplementedException();
     }
 
     public void Interpret(List<Stmt.Stmt> statements)

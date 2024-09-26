@@ -1,5 +1,3 @@
-using CraftingInterpreters.Lox.Expr;
-using CraftingInterpreters.Lox.Stmt;
 using static CraftingInterpreters.Lox.TokenType;
 
 namespace CraftingInterpreters.Lox;
@@ -12,14 +10,33 @@ public class Parser(List<Token> tokens)
     {
         List<Stmt.Stmt> statements = new();
 
-        while (!IsAtEnd()) statements.Add(Statement());
+        while (!IsAtEnd())
+        {
+            statements.Add(Declaration());
+        }
 
         return statements;
     }
 
+    private Stmt.Stmt Declaration()
+    {
+        try
+        {
+            if (Match(VAR)) return VarStatement();
+            return Statement();
+        }
+        catch (ParserException)
+        {
+            Synchronize();
+            return null!;
+        }
+    }
+
     private Stmt.Stmt Statement()
     {
+        if (Match(VAR)) return VarStatement();
         if (Match(PRINT)) return PrintStatement();
+
         return ExpressionStatement();
     }
 
@@ -27,14 +44,22 @@ public class Parser(List<Token> tokens)
     {
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after value.");
-        return new Print(expr);
+        return new Stmt.Print(expr);
     }
 
     private Stmt.Stmt ExpressionStatement()
     {
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after expression.");
-        return new Expression(expr);
+        return new Stmt.Expression(expr);
+    }
+
+    private Stmt.Stmt VarStatement()
+    {
+        var name = Consume(IDENTIFIER, "Expect variable name.");
+        Expr.Expr? initializer = Match(EQUAL) ? Expression() : null;
+        Consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Var(name, initializer);
     }
 
     private Expr.Expr Expression() =>
@@ -48,7 +73,7 @@ public class Parser(List<Token> tokens)
         {
             var op = Previous();
             var right = Comparison();
-            expr = new Binary(expr, op, right);
+            expr = new Expr.Binary(expr, op, right);
         }
 
         return expr;
@@ -62,7 +87,7 @@ public class Parser(List<Token> tokens)
         {
             var op = Previous();
             var right = Term();
-            expr = new Binary(expr, op, right);
+            expr = new Expr.Binary(expr, op, right);
         }
 
         return expr;
@@ -76,7 +101,7 @@ public class Parser(List<Token> tokens)
         {
             var op = Previous();
             var right = Factor();
-            expr = new Binary(expr, op, right);
+            expr = new Expr.Binary(expr, op, right);
         }
 
         return expr;
@@ -90,7 +115,7 @@ public class Parser(List<Token> tokens)
         {
             var op = Previous();
             var right = Unary();
-            expr = new Binary(expr, op, right);
+            expr = new Expr.Binary(expr, op, right);
         }
 
         return expr;
@@ -99,20 +124,21 @@ public class Parser(List<Token> tokens)
     private Expr.Expr Unary()
     {
         if (Match(BANG, MINUS))
-            return new Unary(Previous(), Unary());
+            return new Expr.Unary(Previous(), Unary());
         return Primary();
     }
 
     private Expr.Expr Primary()
     {
-        if (Match(FALSE, TRUE, NIL)) return new Literal(Previous().Type);
-        if (Match(NUMBER, STRING)) return new Literal(Previous().Literal);
+        if (Match(FALSE, TRUE, NIL)) return new Expr.Literal(Previous().Type);
+        if (Match(NUMBER, STRING)) return new Expr.Literal(Previous().Literal);
+        if (Match(IDENTIFIER)) return new Expr.Variable(Previous());
 
         if (Match(LEFT_PAREN))
         {
             var expr = Expression();
             Consume(RIGHT_PAREN, "Expect ')' after expression.");
-            return new Grouping(expr);
+            return new Expr.Grouping(expr);
         }
 
         throw Error(Peek(), "Expect expression.");

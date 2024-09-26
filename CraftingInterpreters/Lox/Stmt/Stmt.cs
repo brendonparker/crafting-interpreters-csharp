@@ -18,3 +18,9 @@ public record Print(Expr.Expr Expression) : Stmt
     public override T Accept<T>(IVisitor<T> visitor) =>
         visitor.VisitPrintStmt(this);
 }
+
+public record Var(Token Name, Expr.Expr? Initializer) : Stmt
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitVarStmt(this);
+}

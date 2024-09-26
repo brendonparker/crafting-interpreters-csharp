@@ -9,17 +9,19 @@ factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary
                | primary ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
+               | "(" expression ")" 
+               | IDENTIFIER;
 ```
 
 Statements:
 
 ```
-program        → statement* EOF ;
-
+program        → declaration* EOF ;
+declaration    → varDecl
+               | statement ;
+varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 statement      → exprStmt
                | printStmt ;
-
 exprStmt       → expression ";" ;
 printStmt      → "print" expression ";" ;
 ```

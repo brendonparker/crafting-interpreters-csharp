@@ -6,4 +6,5 @@ public interface IVisitor<out T>
     T VisitGroupingExpr(Grouping expr);
     T VisitLiteralExpr(Literal expr);
     T VisitUnaryExpr(Unary expr);
+    T VisitVariableExpr(Variable expr);
 }

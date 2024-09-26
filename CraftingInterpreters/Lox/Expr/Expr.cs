@@ -30,3 +30,9 @@ public record Unary(Token Op, Expr Right) : Expr
     public override T Accept<T>(IVisitor<T> visitor) =>
         visitor.VisitUnaryExpr(this);
 }
+
+public record Variable(Token Name) : Expr
+{
+    public override T Accept<T>(IVisitor<T> visitor) =>
+        visitor.VisitVariableExpr(this);
+}
