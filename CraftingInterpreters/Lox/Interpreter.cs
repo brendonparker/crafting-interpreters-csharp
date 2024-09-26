@@ -1,4 +1,3 @@
-using CraftingInterpreters.Lox.Stmt;
 using static CraftingInterpreters.Lox.TokenType;
 
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
@@ -10,6 +9,7 @@ public class Void;
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 {
     private static readonly Void Void = new();
+    private readonly LoxEnvironment _env = new();
 
     public object VisitBinaryExpr(Expr.Binary expr)
     {
@@ -76,11 +76,9 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
             _ => null!
         };
     }
-    
-    public object VisitVariableExpr(Expr.Variable expr)
-    {
-        throw new NotImplementedException();
-    }
+
+    public object VisitVariableExpr(Expr.Variable expr) =>
+        _env.Get(expr.Name)!;
 
     public Void VisitExpressionStmt(Stmt.Expression expr)
     {
@@ -95,9 +93,11 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         return Void;
     }
 
-    public Void VisitVarStmt(Var expr)
+    public Void VisitVarStmt(Stmt.Var expr)
     {
-        throw new NotImplementedException();
+        object? value = expr.Initializer == null ? null : Evaluate(expr.Initializer);
+        _env.Define(expr.Name.Lexeme, value);
+        return Void;
     }
 
     public void Interpret(List<Stmt.Stmt> statements)
