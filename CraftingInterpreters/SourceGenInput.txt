@@ -1,0 +1,14 @@
+Expr
+    Assign: Token Name, Expr Value
+    Binary: Expr Left, Token Op, Expr Right
+    Grouping: Expr Expression
+    Literal: object Value
+    Logical: Expr Left, Token Op, Expr Right
+    Unary: Token Op, Expr Right
+    Variable: Token Name
+Stmt
+    Block: List<Stmt> Statements
+    Expression: Expr.Expr InnerExpression
+    If: Expr.Expr Condition, Stmt ThenBranch, Stmt? ElseBranch
+    Print: Expr.Expr Expression
+    Var: Token Name, Expr.Expr? Initializer
