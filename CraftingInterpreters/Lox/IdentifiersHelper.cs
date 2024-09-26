@@ -2,7 +2,7 @@ namespace CraftingInterpreters.Lox;
 
 public static class IdentifiersHelper
 {
-    private static readonly Dictionary<string, TokenType> _keywords = new()
+    private static readonly Dictionary<string, TokenType> Keywords = new()
     {
         ["and"] = TokenType.AND,
         ["class"] = TokenType.CLASS,
@@ -23,5 +23,5 @@ public static class IdentifiersHelper
     };
 
     public static TokenType? Get(string keyword) =>
-        _keywords.TryGetValue(keyword, out var tokenType) ? tokenType : null;
+        Keywords.TryGetValue(keyword, out var tokenType) ? tokenType : null;
 }
