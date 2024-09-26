@@ -12,4 +12,13 @@ public class LoxEnvironment
         if (_values.TryGetValue(name.Lexeme, out var value)) return value;
         throw new Interpreter.RuntimeException(name, $"Undefined variable: {name.Lexeme}");
     }
+
+    public object? Assign(Token name, object? value)
+    {
+        if (!_values.ContainsKey(name.Lexeme))
+            throw new Interpreter.RuntimeException(name, $"Undefined variable: {name.Lexeme}");
+
+        _values[name.Lexeme] = value;
+        return value;
+    }
 }

@@ -11,10 +11,8 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     private static readonly Void Void = new();
     private readonly LoxEnvironment _env = new();
 
-    public object VisitAssignExpr(Expr.Assign expr)
-    {
-        throw new NotImplementedException();
-    }
+    public object VisitAssignExpr(Expr.Assign expr) =>
+        _env.Assign(expr.Name, Evaluate(expr.Value))!;
 
     public object VisitBinaryExpr(Expr.Binary expr)
     {
