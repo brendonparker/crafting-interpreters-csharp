@@ -4,11 +4,14 @@ namespace CraftingInterpreters.Lox;
 
 public class Scanner(string source)
 {
-    private int _start = 0;
-    private int _current = 0;
+    private int _current;
     private int _line = 1;
+    private int _start;
 
     private List<Token> _tokens = [];
+
+    private bool IsAtEnd =>
+        _current >= source.Length;
 
     public List<Token> ScanTokens()
     {
@@ -78,14 +81,11 @@ public class Scanner(string source)
                 break;
             case '/':
                 if (Match('/'))
-                {
                     // A comment goes until the end of the line.
-                    while (Peek() != '\n' && !IsAtEnd) Advance();
-                }
+                    while (Peek() != '\n' && !IsAtEnd)
+                        Advance();
                 else
-                {
                     AddToken(SLASH);
-                }
 
                 break;
             // Whitespace
@@ -98,15 +98,15 @@ public class Scanner(string source)
                 break;
             // String literals
             case '"':
-                @String();
+                String();
                 break;
             // Numbers
             case var x when IsDigit(x):
-                @Number();
+                Number();
                 break;
             // Identifiers
             case var x when IsAlpha(x):
-                @Identifier();
+                Identifier();
                 break;
             default:
                 LoxRunner.Error(_line, "Unexpected character.");
@@ -133,9 +133,6 @@ public class Scanner(string source)
 
     private char Advance() =>
         source[_current++];
-
-    private bool IsAtEnd =>
-        _current >= source.Length;
 
     private bool IsDigit(char c) =>
         c is >= '0' and <= '9';
@@ -165,7 +162,7 @@ public class Scanner(string source)
         // The closing "
         Advance();
 
-        AddToken(STRING, source.Substring(_start + 1, _current - _start - 1));
+        AddToken(STRING, source.Substring(_start + 1, _current - _start - 2));
     }
 
     private void Number()

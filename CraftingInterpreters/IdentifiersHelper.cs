@@ -19,7 +19,7 @@ public static class IdentifiersHelper
         ["this"] = TokenType.THIS,
         ["true"] = TokenType.TRUE,
         ["var"] = TokenType.VAR,
-        ["while"] = TokenType.WHILE,
+        ["while"] = TokenType.WHILE
     };
 
     public static TokenType? Get(string keyword) =>

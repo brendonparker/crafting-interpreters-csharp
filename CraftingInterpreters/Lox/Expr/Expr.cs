@@ -30,11 +30,3 @@ public record Unary(Token Op, Expr Right) : Expr
     public override T Accept<T>(IVisitor<T> visitor) =>
         visitor.VisitUnaryExpr(this);
 }
-
-public interface IVisitor<out T>
-{
-    T VisitBinaryExpr(Binary expr);
-    T VisitGroupingExpr(Grouping expr);
-    T VisitLiteralExpr(Literal expr);
-    T VisitUnaryExpr(Unary expr);
-}

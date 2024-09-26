@@ -25,10 +25,7 @@ if (args.Length > 1)
 if (args.Length == 1)
 {
     LoxRunner.RunFile(args[0]);
-    if (LoxRunner.HadError)
-    {
-        Environment.Exit(64);
-    }
+    if (LoxRunner.HadError) Environment.Exit(64);
 
     return;
 }

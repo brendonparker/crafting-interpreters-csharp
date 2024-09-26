@@ -5,9 +5,6 @@ namespace CraftingInterpreters.Lox;
 
 public class AstPrinter : IVisitor<string>
 {
-    public string Print(Expr.Expr expr) =>
-        expr.Accept(this);
-
     public string VisitBinaryExpr(Binary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Left, expr.Right);
 
@@ -19,6 +16,9 @@ public class AstPrinter : IVisitor<string>
 
     public string VisitUnaryExpr(Unary expr) =>
         Parenthesize(expr.Op.Lexeme, expr.Right);
+
+    public string Print(Expr.Expr expr) =>
+        expr.Accept(this);
 
     private string Parenthesize(string name, params Expr.Expr[] expressions)
     {

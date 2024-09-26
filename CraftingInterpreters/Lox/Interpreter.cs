@@ -1,38 +1,16 @@
-using CraftingInterpreters.Lox.Expr;
 using static CraftingInterpreters.Lox.TokenType;
 
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 
 namespace CraftingInterpreters.Lox;
 
-public class Interpreter : IVisitor<object>
+public class Void;
+
+public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 {
-    public void Interpret(Expr.Expr expression)
-    {
-        try
-        {
-            var value = Evaluate(expression);
-            Console.WriteLine(Stringify(value));
-        }
-        catch (RuntimeException e)
-        {
-            LoxRunner.HandleRuntimeException(e);
-        }
-    }
+    private static readonly Void Void = new();
 
-    private string Stringify(object? obj)
-    {
-        if (obj == null) return "nil";
-
-        if (obj is double objectAsDouble)
-        {
-            return $"{objectAsDouble:0.#####}";
-        }
-
-        return obj.ToString()!;
-    }
-
-    public object VisitBinaryExpr(Binary expr)
+    public object VisitBinaryExpr(Expr.Binary expr)
     {
         var (left, right) = (Evaluate(expr.Left), Evaluate(expr.Right));
 
@@ -43,7 +21,6 @@ public class Interpreter : IVisitor<object>
         }
 
         if (left is double leftAsDouble && right is double rightAsDouble)
-        {
             return expr.Op.Type switch
             {
                 MINUS => leftAsDouble - rightAsDouble,
@@ -53,17 +30,14 @@ public class Interpreter : IVisitor<object>
                 GREATER => leftAsDouble > rightAsDouble,
                 GREATER_EQUAL => leftAsDouble >= rightAsDouble,
                 LESS => leftAsDouble < rightAsDouble,
-                LESS_EQUAL => leftAsDouble <= rightAsDouble,
+                LESS_EQUAL => leftAsDouble <= rightAsDouble
             };
-        }
 
         if (left is string leftAsString && right is string rightAsString)
-        {
             return expr.Op.Type switch
             {
                 PLUS => leftAsString + rightAsString
             };
-        }
 
         switch (expr.Op.Type)
         {
@@ -84,13 +58,13 @@ public class Interpreter : IVisitor<object>
         return null!;
     }
 
-    public object VisitGroupingExpr(Grouping expr) =>
+    public object VisitGroupingExpr(Expr.Grouping expr) =>
         Evaluate(expr.Expression);
 
-    public object VisitLiteralExpr(Literal expr) =>
+    public object VisitLiteralExpr(Expr.Literal expr) =>
         expr.Value;
 
-    public object VisitUnaryExpr(Unary expr)
+    public object VisitUnaryExpr(Expr.Unary expr)
     {
         var right = Evaluate(expr.Right);
 
@@ -100,6 +74,46 @@ public class Interpreter : IVisitor<object>
             MINUS => -CheckNumberOperand(expr.Op, right),
             _ => null!
         };
+    }
+
+    public Void VisitExpressionStmt(Stmt.Expression expr)
+    {
+        Evaluate(expr.InnerExpression);
+        return Void;
+    }
+
+    public Void VisitPrintStmt(Stmt.Print expr)
+    {
+        var result = Evaluate(expr.Expression);
+        Print(result);
+        return Void;
+    }
+
+    public void Interpret(List<Stmt.Stmt> statements)
+    {
+        try
+        {
+            foreach (var statement in statements) Execute(statement);
+        }
+        catch (RuntimeException e)
+        {
+            LoxRunner.HandleRuntimeException(e);
+        }
+    }
+
+    private void Execute(Stmt.Stmt statement) =>
+        statement.Accept(this);
+
+    private void Print(object value) =>
+        Console.WriteLine(Stringify(value));
+
+    private string Stringify(object? obj)
+    {
+        if (obj == null) return "nil";
+
+        if (obj is double objectAsDouble) return $"{objectAsDouble:0.#####}";
+
+        return obj.ToString()!;
     }
 
     private bool IsTruthy(object? val) =>

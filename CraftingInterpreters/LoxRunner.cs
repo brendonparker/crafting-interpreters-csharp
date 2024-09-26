@@ -2,9 +2,9 @@ namespace CraftingInterpreters.Lox;
 
 public static class LoxRunner
 {
-    private static Interpreter _interpreter = new();
-    public static bool HadError { get; private set; } = false;
-    public static bool HadRuntimeError { get; private set; } = false;
+    private static readonly Interpreter _interpreter = new();
+    public static bool HadError { get; private set; }
+    public static bool HadRuntimeError { get; private set; }
 
     public static void RunFile(string fileName)
     {
@@ -27,15 +27,9 @@ public static class LoxRunner
 
     private static void HandleErrors()
     {
-        if (HadError)
-        {
-            Environment.Exit(64);
-        }
+        if (HadError) Environment.Exit(64);
 
-        if (HadRuntimeError)
-        {
-            Environment.Exit(70);
-        }
+        if (HadRuntimeError) Environment.Exit(70);
     }
 
     public static void Run(string source)
@@ -44,12 +38,12 @@ public static class LoxRunner
         var tokens = scanner.ScanTokens();
         Parser parser = new(tokens);
 
-        var expression = parser.Parse();
+        var statements = parser.Parse();
 
         // Stop if there was a syntax error.
         if (HadError) return;
-        
-        _interpreter.Interpret(expression!);
+
+        _interpreter.Interpret(statements!);
     }
 
     public static void Error(int line, string message) =>
@@ -58,13 +52,9 @@ public static class LoxRunner
     public static void Error(Token token, string message)
     {
         if (token.Type == TokenType.EOF)
-        {
             Report(token.Line, " at end", message);
-        }
         else
-        {
             Report(token.Line, " at '" + token.Lexeme + "'", message);
-        }
     }
 
     public static void Report(int line, string where, string message)

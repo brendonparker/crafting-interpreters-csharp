@@ -1,23 +1,40 @@
 using CraftingInterpreters.Lox.Expr;
+using CraftingInterpreters.Lox.Stmt;
 using static CraftingInterpreters.Lox.TokenType;
 
 namespace CraftingInterpreters.Lox;
 
 public class Parser(List<Token> tokens)
 {
-    private int _current = 0;
+    private int _current;
 
-    public Expr.Expr? Parse()
+    public List<Stmt.Stmt> Parse()
     {
-        try
-        {
-            return Expression();
-        }
-        catch (ParserException e)
-        {
-            Console.WriteLine($"{e}");
-            return null;
-        }
+        List<Stmt.Stmt> statements = new();
+
+        while (!IsAtEnd()) statements.Add(Statement());
+
+        return statements;
+    }
+
+    private Stmt.Stmt Statement()
+    {
+        if (Match(PRINT)) return PrintStatement();
+        return ExpressionStatement();
+    }
+
+    private Stmt.Stmt PrintStatement()
+    {
+        var expr = Expression();
+        Consume(SEMICOLON, "Expect ';' after value.");
+        return new Print(expr);
+    }
+
+    private Stmt.Stmt ExpressionStatement()
+    {
+        var expr = Expression();
+        Consume(SEMICOLON, "Expect ';' after expression.");
+        return new Expression(expr);
     }
 
     private Expr.Expr Expression() =>
@@ -104,13 +121,11 @@ public class Parser(List<Token> tokens)
     private bool Match(params TokenType[] tokenTypes)
     {
         foreach (var tokenType in tokenTypes)
-        {
             if (Check(tokenType))
             {
                 Advance();
                 return true;
             }
-        }
 
         return false;
     }
@@ -165,7 +180,7 @@ public class Parser(List<Token> tokens)
         }
     }
 
-    private ParserException Error(Token token, String message)
+    private ParserException Error(Token token, string message)
     {
         LoxRunner.Error(token, message);
         return new ParserException();
