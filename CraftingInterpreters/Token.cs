@@ -1,4 +1,4 @@
-namespace CraftingInterpreters;
+namespace CraftingInterpreters.Lox;
 
 public record Token(TokenType Type, string Lexeme, object? Literal, int Line)
 {

@@ -1,6 +1,6 @@
-using static CraftingInterpreters.TokenType;
+using static CraftingInterpreters.Lox.TokenType;
 
-namespace CraftingInterpreters;
+namespace CraftingInterpreters.Lox;
 
 public class Scanner(string source)
 {
@@ -109,7 +109,7 @@ public class Scanner(string source)
                 @Identifier();
                 break;
             default:
-                Lox.Error(_line, "Unexpected character.");
+                LoxRunner.Error(_line, "Unexpected character.");
                 break;
         }
     }
@@ -158,7 +158,7 @@ public class Scanner(string source)
 
         if (IsAtEnd)
         {
-            Lox.Error(_line, "Unterminated string.");
+            LoxRunner.Error(_line, "Unterminated string.");
             return;
         }
 

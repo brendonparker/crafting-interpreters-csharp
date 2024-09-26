@@ -1,4 +1,4 @@
-namespace CraftingInterpreters;
+namespace CraftingInterpreters.Lox;
 
 public enum TokenType
 {

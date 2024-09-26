@@ -1,4 +1,16 @@
-﻿using CraftingInterpreters;
+﻿using CraftingInterpreters.Lox;
+
+// using Expr = CraftingInterpreters.Lox.Expr;
+// var expression = new Expr.Binary(
+//     new Expr.Unary(
+//         new Token(TokenType.MINUS, "-", null, 1),
+//         new Expr.Literal(123)),
+//     new Token(TokenType.STAR, "*", null, 1),
+//     new Expr.Grouping(
+//         new Expr.Literal(45.67)));
+//
+// Console.WriteLine(new AstPrinter().Print(expression));
+// return;
 
 if (args.Length > 1)
 {
@@ -9,8 +21,8 @@ if (args.Length > 1)
 
 if (args.Length == 1)
 {
-    Lox.RunFile(args[0]);
-    if (Lox.HadError)
+    LoxRunner.RunFile(args[0]);
+    if (LoxRunner.HadError)
     {
         Environment.Exit(64);
     }
@@ -18,4 +30,4 @@ if (args.Length == 1)
     return;
 }
 
-Lox.RunPrompt();
+LoxRunner.RunPrompt();

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CraftingInterpreters", "CraftingInterpreters\CraftingInterpreters.csproj", "{7B34FA2F-991E-4770-8BC4-DECD37A292BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CraftingInterpreters.Tool", "CraftingInterpreters.Tool\CraftingInterpreters.Tool.csproj", "{770167F6-7A3A-428D-8C6C-70FDFF442119}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{7B34FA2F-991E-4770-8BC4-DECD37A292BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B34FA2F-991E-4770-8BC4-DECD37A292BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B34FA2F-991E-4770-8BC4-DECD37A292BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{770167F6-7A3A-428D-8C6C-70FDFF442119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{770167F6-7A3A-428D-8C6C-70FDFF442119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{770167F6-7A3A-428D-8C6C-70FDFF442119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{770167F6-7A3A-428D-8C6C-70FDFF442119}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

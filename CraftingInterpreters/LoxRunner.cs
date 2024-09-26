@@ -1,6 +1,6 @@
-namespace CraftingInterpreters;
+namespace CraftingInterpreters.Lox;
 
-public static class Lox
+public static class LoxRunner
 {
     public static bool HadError { get; private set; } = false;
 
