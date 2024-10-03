@@ -40,16 +40,16 @@ namespace CraftingInterpreters.Generators
                         sb.AppendLine("        public override T Accept<T>(IVisitor<T> visitor) =>");
                         sb.Append("            visitor.Visit").Append(entry.ClassName).Append(entry.BaseName)
                             .AppendLine("(this);");
-                        sb.AppendLine("}");
+                        sb.AppendLine("    }");
                         sb.AppendLine();
                     }
                     
                     sb
-                        .AppendLine("public interface IVisitor<out T>")
-                        .AppendLine("{");
+                        .AppendLine("    public interface IVisitor<out T>")
+                        .AppendLine("    {");
                     foreach (var entry in classDef)
                     {
-                        sb.Append("    T Visit")
+                        sb.Append("        T Visit")
                             .Append(entry.ClassName)
                             .Append(entry.BaseName)
                             .Append("(")
@@ -60,7 +60,7 @@ namespace CraftingInterpreters.Generators
                             .Append(entry.BaseName.ToLower())
                             .AppendLine(");");
                     }
-                    sb.AppendLine("}");
+                    sb.AppendLine("    }");
                     sb.AppendLine("}");
                     sb.AppendLine();
                     sb.AppendLine("#nullable restore");

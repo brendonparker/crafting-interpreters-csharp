@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using static CraftingInterpreters.Lox.TokenType;
 
 namespace CraftingInterpreters.Lox;
@@ -39,6 +40,7 @@ public class Parser(List<Token> tokens)
         if (Match(VAR)) return VarStatement();
         if (Match(PRINT)) return PrintStatement();
         if (Match(WHILE)) return WhileStatement();
+        if (Match(FOR)) return ForStatement();
         if (Match(RETURN)) return ReturnStatement();
         if (Match(LEFT_BRACE)) return BlockStatement();
 
@@ -82,7 +84,60 @@ public class Parser(List<Token> tokens)
         var body = Statement();
         return new Stmt.While(expr, body);
     }
-    
+
+    private Stmt ForStatement()
+    {
+        Consume(LEFT_PAREN, "Expect '(' after 'for';");
+        Stmt? initializer;
+        if (Match(SEMICOLON))
+        {
+            initializer = null;
+        }
+        else if (Match(VAR))
+        {
+            initializer = VarStatement();
+        }
+        else
+        {
+            initializer = ExpressionStatement();
+        }
+
+        Expr condition = new Expr.Literal(true);
+        if (!Check(SEMICOLON))
+        {
+            condition = Expression();
+        }
+        Consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        Expr? increment = null;
+        if (!Check(RIGHT_PAREN))
+        {
+            increment = Expression();
+        }
+
+        Consume(RIGHT_PAREN, "Expected ')' for clauses.");
+
+        var body = Statement();
+        if (increment != null)
+        {
+            body = new Stmt.Block([
+                body,
+                new Stmt.Expression(increment)
+            ]);
+        }
+
+        body = new Stmt.While(condition, body);
+        if (initializer != null)
+        {
+            body = new Stmt.Block([
+                initializer,
+                body
+            ]);
+        }
+
+        return body;
+    }
+
     private Stmt ReturnStatement()
     {
         var keyword = Previous();

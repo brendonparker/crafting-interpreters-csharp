@@ -47,10 +47,15 @@ statement      → exprStmt
                | ifStmt
                | printStmt
                | whileStmt
+               | forStmt
                | returnStmt
                | block ;
                
 whileStmt      → "while" "(" expression ")" statement ;
+
+forStmt        → "for" "(" ( varDecl | exprStmt | ";" )
+                 expression? ";"
+                 expression? ")" statement ;
                
 returnStmt     → "return" expression? ";" ;
 
