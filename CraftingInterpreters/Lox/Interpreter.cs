@@ -162,6 +162,16 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         return Void;
     }
 
+    public Void VisitWhileStmt(Stmt.While stmt)
+    {
+        while (IsTruthy(Evaluate(stmt.Condition)))
+        {
+            Execute(stmt.Body);
+        }
+
+        return Void;
+    }
+
     public Void VisitFunctionStmt(Stmt.Function stmt)
     {
         LoxFunction function = new(stmt);

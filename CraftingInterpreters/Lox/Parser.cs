@@ -38,6 +38,7 @@ public class Parser(List<Token> tokens)
         if (Match(IF)) return IfStatement();
         if (Match(VAR)) return VarStatement();
         if (Match(PRINT)) return PrintStatement();
+        if (Match(WHILE)) return WhileStatement();
         if (Match(RETURN)) return ReturnStatement();
         if (Match(LEFT_BRACE)) return BlockStatement();
 
@@ -71,6 +72,15 @@ public class Parser(List<Token> tokens)
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after value.");
         return new Stmt.Print(expr);
+    }
+
+    private Stmt WhileStatement()
+    {
+        Consume(LEFT_PAREN, "Expect '(' after 'while';");
+        var expr = Expression();
+        Consume(RIGHT_PAREN, "Expect ')' after condition;");
+        var body = Statement();
+        return new Stmt.While(expr, body);
     }
     
     private Stmt ReturnStatement()

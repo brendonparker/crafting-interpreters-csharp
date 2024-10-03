@@ -46,8 +46,11 @@ varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 statement      → exprStmt
                | ifStmt
                | printStmt
+               | whileStmt
                | returnStmt
                | block ;
+               
+whileStmt      → "while" "(" expression ")" statement ;
                
 returnStmt     → "return" expression? ";" ;
 
