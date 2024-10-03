@@ -59,6 +59,7 @@ public class Parser(List<Token> tokens)
         {
             statements.Add(Declaration());
         }
+
         Consume(RIGHT_BRACE, "Expect '}' after block.");
         return new Stmt.Block(statements);
     }
@@ -116,10 +117,10 @@ public class Parser(List<Token> tokens)
             var right = Equality();
             expr = new Expr.Logical(expr, op, right);
         }
-        
+
         return expr;
     }
-    
+
     private Expr And()
     {
         var expr = Equality();
@@ -130,7 +131,7 @@ public class Parser(List<Token> tokens)
             var right = Equality();
             expr = new Expr.Logical(expr, op, right);
         }
-        
+
         return expr;
     }
 
@@ -194,7 +195,38 @@ public class Parser(List<Token> tokens)
     {
         if (Match(BANG, MINUS))
             return new Expr.Unary(Previous(), Unary());
-        return Primary();
+        return Call();
+    }
+
+    private Expr Call()
+    {
+        var expr = Primary();
+
+        while (true)
+        {
+            if (!Match(LEFT_PAREN)) break;
+
+            expr = FinishCall(expr);
+        }
+
+        return expr;
+    }
+
+    private Expr FinishCall(Expr callee)
+    {
+        List<Expr> arguments = new();
+        while (!Check(RIGHT_PAREN) || Match(COMMA))
+        {
+            if (arguments.Count >= 255)
+            {
+                Error(Peek(), "Can't have more than 255 arguments.");
+            }
+
+            arguments.Add(Expression());
+        }
+
+        var paren = Consume(RIGHT_PAREN, "Expect ')' after arguments.");
+        return new Expr.Call(callee, paren, arguments);
     }
 
     private Expr Primary()

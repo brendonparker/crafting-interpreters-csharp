@@ -62,6 +62,27 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         return null!;
     }
 
+    public object VisitCallExpr(Expr.Call expr)
+    {
+        var callee = Evaluate(expr.Callee);
+
+        var arguments = expr.Arguments
+            .Select(Evaluate)
+            .ToArray();
+        if (callee is ILoxCallable function)
+        {
+            if (function.Arity != arguments.Length)
+            {
+                throw new RuntimeException(expr.Paren,
+                    $"Expected {function.Arity} arguments but got {arguments.Length}.");
+            }
+
+            return function.Call(this, arguments);
+        }
+
+        throw new RuntimeException(expr.Paren, "Can only call functions and classes.");
+    }
+
     public object VisitGroupingExpr(Expr.Grouping expr) =>
         Evaluate(expr.Expression);
 
@@ -72,7 +93,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     {
         var left = Evaluate(expr.Left);
         var leftTruthy = IsTruthy(left);
-        
+
         if (expr.Op.Type == OR && leftTruthy) return left;
         if (!leftTruthy) return left;
         return Evaluate(expr.Right);
@@ -104,6 +125,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         {
             Execute(stmt.ElseBranch);
         }
+
         return Void;
     }
 

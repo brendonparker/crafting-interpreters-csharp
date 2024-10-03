@@ -19,7 +19,9 @@ term           → factor ( ( "-" | "+" ) factor )* ;
 factor         → unary ( ( "/" | "*" ) unary )* ;
 
 unary          → ( "!" | "-" ) unary
-               | primary ;
+               | call ;
+
+call           → primary ( "(" arguments? ")" )* ;
 
 primary        → NUMBER | STRING | "true" | "false" | "nil"
                | "(" expression ")" 
