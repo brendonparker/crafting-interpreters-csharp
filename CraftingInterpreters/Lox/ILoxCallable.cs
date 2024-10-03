@@ -3,7 +3,7 @@ namespace CraftingInterpreters.Lox;
 public interface ILoxCallable
 {
     int Arity { get; }
-    object Call(Interpreter interpreter, object[] arguments);
+    object? Call(Interpreter interpreter, object[] arguments);
 }
 
 public class ClockCallable : ILoxCallable
@@ -12,7 +12,7 @@ public class ClockCallable : ILoxCallable
 
     public int Arity => 0;
 
-    public object Call(Interpreter interpreter, object[] arguments) =>
+    public object? Call(Interpreter interpreter, object[] arguments) =>
         DateTime.UtcNow.Ticks;
 }
 
@@ -20,7 +20,7 @@ public class LoxFunction(Stmt.Function declaration) : ILoxCallable
 {
     public int Arity => declaration.Params.Count;
 
-    public object Call(Interpreter interpreter, object[] arguments)
+    public object? Call(Interpreter interpreter, object[] arguments)
     {
         LoxEnvironment env = new(interpreter.Globals);
 
@@ -30,8 +30,16 @@ public class LoxFunction(Stmt.Function declaration) : ILoxCallable
             env.Define(argument.Lexeme, arguments[i]);
         }
 
-        interpreter.ExecuteBlock(declaration.Body, env);
-        return null!;
+        try
+        {
+            interpreter.ExecuteBlock(declaration.Body, env);
+        }
+        catch (ReturnException e)
+        {
+            return e.Value;
+        }
+
+        return null;
     }
 
     public override string ToString() =>

@@ -27,7 +27,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 
         switch (expr.Op.Type)
         {
-            case EQUAL: return AreEqual(left, right);
+            case EQUAL_EQUAL: return AreEqual(left, right);
             case BANG_EQUAL: return !AreEqual(left, right);
         }
 
@@ -84,7 +84,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
                     $"Expected {function.Arity} arguments but got {arguments.Length}.");
             }
 
-            return function.Call(this, arguments);
+            return function.Call(this, arguments)!;
         }
 
         throw new RuntimeException(expr.Paren, "Can only call functions and classes.");
@@ -167,6 +167,12 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         LoxFunction function = new(stmt);
         _env.Define(stmt.Name.Lexeme, function);
         return Void;
+    }
+
+    public Void VisitReturnStmt(Stmt.Return stmt)
+    {
+        if (stmt.Value is null) throw new ReturnException();
+        throw new ReturnException(Evaluate(stmt.Value));
     }
 
     public void Interpret(List<Stmt> statements)

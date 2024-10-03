@@ -46,7 +46,10 @@ varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 statement      → exprStmt
                | ifStmt
                | printStmt
+               | returnStmt
                | block ;
+               
+returnStmt     → "return" expression? ";" ;
 
 ifStmt         → "if" "(" expression ")" statement
                ( "else" statement )? ;
