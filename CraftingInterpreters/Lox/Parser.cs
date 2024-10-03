@@ -100,6 +100,7 @@ public class Parser(List<Token> tokens)
         }
 
         Consume(RIGHT_PAREN, "Expect ')' after parameters.");
+        Consume(LEFT_BRACE, $$"""Expect '{' before {{kind}} body.""");
         var body = BlockStatement();
         return new Stmt.Function(name, parameters, body.Statements);
     }

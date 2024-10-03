@@ -52,9 +52,9 @@ public static class LoxRunner
     public static void Error(Token token, string message)
     {
         if (token.Type == TokenType.EOF)
-            Report(token.Line, " at end", message);
+            Report(token.Line, "at end", message);
         else
-            Report(token.Line, " at '" + token.Lexeme + "'", message);
+            Report(token.Line, "at '" + token.Lexeme + "'", message);
     }
 
     public static void Report(int line, string where, string message)

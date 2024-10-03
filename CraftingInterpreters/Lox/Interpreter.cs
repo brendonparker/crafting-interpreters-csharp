@@ -9,13 +9,13 @@ public class Void;
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 {
     private static readonly Void Void = new();
-    private readonly LoxEnvironment _global;
+    public LoxEnvironment Globals { get; }
     private LoxEnvironment _env;
 
     public Interpreter()
     {
-        _global = _env = new LoxEnvironment();
-        _global.Define("clock", ClockCallable.Instance);
+        Globals = _env = new LoxEnvironment();
+        Globals.Define("clock", ClockCallable.Instance);
     }
 
     public object VisitAssignExpr(Expr.Assign expr) =>
@@ -164,7 +164,9 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 
     public Void VisitFunctionStmt(Stmt.Function stmt)
     {
-        throw new NotImplementedException();
+        LoxFunction function = new(stmt);
+        _env.Define(stmt.Name.Lexeme, function);
+        return Void;
     }
 
     public void Interpret(List<Stmt> statements)
@@ -182,7 +184,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
     private Void Execute(Stmt statement) =>
         statement.Accept(this);
 
-    private void ExecuteBlock(List<Stmt> statements, LoxEnvironment environment)
+    public void ExecuteBlock(List<Stmt> statements, LoxEnvironment environment)
     {
         var prev = _env;
         try
