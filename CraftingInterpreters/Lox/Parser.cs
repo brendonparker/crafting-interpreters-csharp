@@ -22,6 +22,7 @@ public class Parser(List<Token> tokens)
     {
         try
         {
+            if (Match(FUN)) return FunctionStatement();
             if (Match(VAR)) return VarStatement();
             return Statement();
         }
@@ -76,6 +77,31 @@ public class Parser(List<Token> tokens)
         var expr = Expression();
         Consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
+    }
+
+    private Stmt FunctionStatement(string kind = "function")
+    {
+        var name = Consume(IDENTIFIER, $"Expect {kind} name.");
+        Consume(LEFT_PAREN, $"Expected '(' after {kind} name.");
+
+        List<Token> parameters = new();
+        if (!Check(RIGHT_PAREN))
+        {
+            do
+            {
+                if (parameters.Count >= 255)
+                {
+                    Error(Peek(), "Can't have more than 255 parameters.");
+                }
+
+                parameters.Add(
+                    Consume(IDENTIFIER, "Expect parameter name."));
+            } while (Match(COMMA));
+        }
+
+        Consume(RIGHT_PAREN, "Expect ')' after parameters.");
+        var body = BlockStatement();
+        return new Stmt.Function(name, parameters, body.Statements);
     }
 
     private Stmt VarStatement()
@@ -215,14 +241,17 @@ public class Parser(List<Token> tokens)
     private Expr FinishCall(Expr callee)
     {
         List<Expr> arguments = new();
-        while (!Check(RIGHT_PAREN) || Match(COMMA))
+        if (!Check(RIGHT_PAREN))
         {
-            if (arguments.Count >= 255)
+            do
             {
-                Error(Peek(), "Can't have more than 255 arguments.");
-            }
+                if (arguments.Count >= 255)
+                {
+                    Error(Peek(), "Can't have more than 255 arguments.");
+                }
 
-            arguments.Add(Expression());
+                arguments.Add(Expression());
+            } while (Match(COMMA));
         }
 
         var paren = Consume(RIGHT_PAREN, "Expect ')' after arguments.");

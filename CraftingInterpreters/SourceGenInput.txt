@@ -13,3 +13,4 @@ Stmt
     If: Expr Condition, Stmt ThenBranch, Stmt? ElseBranch
     Print: Expr ExpressionToPrint
     Var: Token Name, Expr? Initializer
+    Function: Token Name, List<Token> Params, List<Stmt> Body

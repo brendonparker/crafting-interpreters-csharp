@@ -9,7 +9,14 @@ public class Void;
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
 {
     private static readonly Void Void = new();
-    private LoxEnvironment _env = new();
+    private readonly LoxEnvironment _global;
+    private LoxEnvironment _env;
+
+    public Interpreter()
+    {
+        _global = _env = new LoxEnvironment();
+        _global.Define("clock", ClockCallable.Instance);
+    }
 
     public object VisitAssignExpr(Expr.Assign expr) =>
         _env.Assign(expr.Name, Evaluate(expr.Value))!;
@@ -153,6 +160,11 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<Void>
         var value = stmt.Initializer == null ? null : Evaluate(stmt.Initializer);
         _env.Define(stmt.Name.Lexeme, value);
         return Void;
+    }
+
+    public Void VisitFunctionStmt(Stmt.Function stmt)
+    {
+        throw new NotImplementedException();
     }
 
     public void Interpret(List<Stmt> statements)
